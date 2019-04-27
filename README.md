@@ -5,6 +5,8 @@ Exploring the idea of deriving `cats.mtl.ApplicativeAsk` instances for `zio.Task
 
 ### Motivation
 
+See the initial PR for additional insight: https://github.com/gvolpe/classy-optics/pull/2
+
 TODO
 
 ### Credits
