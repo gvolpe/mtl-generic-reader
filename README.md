@@ -1,6 +1,8 @@
 mtl-generic-reader
 ==================
 
+[![CircleCI](https://circleci.com/gh/gvolpe/mtl-generic-reader.svg?style=svg)](https://circleci.com/gh/gvolpe/mtl-generic-reader)
+
 Exploring the idea of deriving `cats.mtl.ApplicativeAsk` instances for `zio.Task` and `cats.effect.IO` in a principled way.
 
 ### Motivation
