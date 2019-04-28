@@ -5,6 +5,7 @@ object Dependencies {
   object Versions {
     val cats                = "1.6.0"
     val catsMeowMtl         = "0.2.0"
+    val catsMtl             = "0.4.0"
     val catsPar             = "0.2.1"
     val catsEffect          = "1.2.0"
     val fs2                 = "1.0.4"
@@ -30,6 +31,7 @@ object Dependencies {
 
     lazy val cats                = "org.typelevel"         %% "cats-core"                  % Versions.cats
     lazy val catsMeowMtl         = "com.olegpy"            %% "meow-mtl"                   % Versions.catsMeowMtl
+    lazy val catsMtl             = "org.typelevel"         %% "cats-mtl-core"              % Versions.catsMtl
     lazy val catsPar             = "io.chrisdavenport"     %% "cats-par"                   % Versions.catsPar
     lazy val catsEffect          = "org.typelevel"         %% "cats-effect"                % Versions.catsEffect
     lazy val fs2                 = "co.fs2"                %% "fs2-core"                   % Versions.fs2
@@ -59,6 +61,7 @@ object Dependencies {
     lazy val scalaTest           = "org.scalatest"         %% "scalatest"                  % Versions.scalaTest
     lazy val scalaCheck          = "org.scalacheck"        %% "scalacheck"                 % Versions.scalaCheck
     lazy val catsEffectLaws      = "org.typelevel"         %% "cats-effect-laws"           % Versions.catsEffect
+    lazy val catsTestKit         = "org.typelevel"         %% "cats-testkit"               % Versions.cats
   }
 
 

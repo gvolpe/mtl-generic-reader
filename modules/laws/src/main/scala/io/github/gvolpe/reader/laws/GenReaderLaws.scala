@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package io.github.gvolpe.reader
+package io.github.gvolpe.reader.laws
 
-import cats.Eq
+import cats.laws._
+import io.github.gvolpe.reader.GenReader
 
-trait CheckLaws {
-  def check[A: Eq](results: laws.IsEq[A]*): Unit =
-    results.foreach { rs =>
-      try {
-        assert(Eq[A].eqv(rs.lhs, rs.rhs), s"${rs.lhs} was not equals to ${rs.rhs}")
-      } catch {
-        case e: AssertionError =>
-          System.err.println(s"💥💥💥 ${e.getMessage} 💥💥💥")
-          System.exit(-1)
-      }
-    }
+trait GenReaderLaws[F[_], G[_], R] {
+  def M: GenReader[F, G, R]
+
+  def elimination[A](fa: F[A], env: R) =
+    M.unread(M.runReader(fa)(env)) <-> fa
+
+  def idempotency[A](fa: F[A], env: R) =
+    M.runReader(M.unread(M.runReader(fa)(env)))(env) <-> M.runReader(fa)(env)
 }

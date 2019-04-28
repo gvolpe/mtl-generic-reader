@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package io.github.gvolpe.reader.zio
+package io.github.gvolpe.reader
 
-import io.github.gvolpe.reader.BiReader
 import scalaz.zio.{ Task, TaskR }
 
-object instances extends BiReaderInstances
+object zio extends BiReaderInstances
 
-private[zio] abstract class BiReaderInstances {
+private[reader] abstract class BiReaderInstances {
 
   implicit def taskGenReader[R]: BiReader[TaskR, R] =
     new BiReader[TaskR, R] {
