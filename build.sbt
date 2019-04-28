@@ -18,36 +18,36 @@ promptTheme := PromptTheme(
 )
 
 val commonSettings = Seq(
-	organizationName := "Gabriel Volpe",
-	startYear := Some(2019),
-	licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
-	homepage := Some(url("https://github.com/gvolpe/mtl-generic-reader/")),
-	headerLicense := Some(HeaderLicense.ALv2("2019", "Gabriel Volpe")),
-	libraryDependencies ++= Seq(
-		compilerPlugin(Libraries.kindProjector),
-		compilerPlugin(Libraries.betterMonadicFor),
-		compilerPlugin(Libraries.macroParadise)
-	),
-	resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
-	scalafmtOnCompile := true,
-	publishTo := {
-		val sonatype = "https://oss.sonatype.org/"
-		if (isSnapshot.value)
-			Some("snapshots" at sonatype + "content/repositories/snapshots")
-		else
-			Some("releases" at sonatype + "service/local/staging/deploy/maven2")
-	},
-	publishMavenStyle := true,
-	publishArtifact in Test := false,
-	pomIncludeRepository := { _ => false },
-	pomExtra :=
-			<developers>
-				<developer>
-					<id>gvolpe</id>
-					<name>Gabriel Volpe</name>
-					<url>http://github.com/gvolpe</url>
-				</developer>
-			</developers>
+  organizationName := "Gabriel Volpe",
+  startYear := Some(2019),
+  licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+  homepage := Some(url("https://github.com/gvolpe/mtl-generic-reader/")),
+  headerLicense := Some(HeaderLicense.ALv2("2019", "Gabriel Volpe")),
+  libraryDependencies ++= Seq(
+    compilerPlugin(Libraries.kindProjector),
+    compilerPlugin(Libraries.betterMonadicFor),
+    compilerPlugin(Libraries.macroParadise)
+  ),
+  resolvers += "Apache public" at "https://repository.apache.org/content/groups/public/",
+  scalafmtOnCompile := true,
+  publishTo := {
+    val sonatype = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at sonatype + "content/repositories/snapshots")
+    else
+      Some("releases" at sonatype + "service/local/staging/deploy/maven2")
+  },
+  publishMavenStyle := true,
+  publishArtifact in Test := false,
+  pomIncludeRepository := { _ => false },
+  pomExtra :=
+      <developers>
+        <developer>
+          <id>gvolpe</id>
+          <name>Gabriel Volpe</name>
+          <url>http://github.com/gvolpe</url>
+        </developer>
+      </developers>
 )
 
 lazy val noPublish = Seq(
@@ -58,31 +58,31 @@ lazy val noPublish = Seq(
 )
 
 lazy val CoreDependencies = Seq(
-	Libraries.cats,
-	Libraries.catsMtl
+  Libraries.cats,
+  Libraries.catsMtl
 )
 
 lazy val LawsDependencies = Seq(
-	Libraries.catsEffectLaws
+  Libraries.catsEffectLaws
 )
 
 lazy val CatsDependencies = Seq(
-	Libraries.scalaTest      % "test",
-	Libraries.scalaCheck     % "test",
+  Libraries.scalaTest      % "test",
+  Libraries.scalaCheck     % "test",
   Libraries.catsTestKit % Test
 )
 
 lazy val ZioDependencies = Seq(
-	Libraries.zioCore,
-	Libraries.zioCats,
-	Libraries.scalaTest      % "test",
-	Libraries.scalaCheck     % "test",
+  Libraries.zioCore,
+  Libraries.zioCats,
+  Libraries.scalaTest      % "test",
+  Libraries.scalaCheck     % "test",
   Libraries.catsTestKit % Test
 )
 
 lazy val ExamplesDependencies = Seq(
-	Libraries.catsMeowMtl,
-	Libraries.catsEffect
+  Libraries.catsMeowMtl,
+  Libraries.catsEffect
 )
 
 lazy val `mtl-gen-reader-root` = project.in(file("."))
