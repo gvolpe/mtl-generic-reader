@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-package io.github.gvolpe.reader
+package io.github.gvolpe.reader.laws
 
 import cats.Functor
 import cats.arrow.FunctionK
-import laws._
-
-object laws {
-  final case class IsEq[A](lhs: A, rhs: A)
-
-  implicit final class IsEqArrow[A](private val lhs: A) extends AnyVal {
-    def <->(rhs: A): IsEq[A] = IsEq(lhs, rhs)
-  }
-}
-
-trait GenReaderLaws[F[_], G[_], R] {
-  def M: GenReader[F, G, R]
-
-  def elimination[A](fa: F[A], env: R, ga: G[A]) =
-    M.runReader(fa)(env) <-> ga
-
-  def idempotency[A](fa: F[A], env: R) =
-    M.runReader(M.unread(M.runReader(fa)(env)))(env) <-> M.runReader(fa)(env)
-}
+import cats.laws._
+import io.github.gvolpe.reader.Dependency
 
 trait DependencyLaws {
 

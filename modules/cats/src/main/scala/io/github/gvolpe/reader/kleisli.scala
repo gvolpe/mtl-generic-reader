@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package io.github.gvolpe.reader.cats
+package io.github.gvolpe.reader
 
 import cats.data.Kleisli
-import io.github.gvolpe.reader.TransReader
 
-object instances extends TransReaderInstances
+object kleisli extends TransReaderInstances
 
-private[cats] trait TransReaderInstances {
+private[reader] trait TransReaderInstances {
 
   implicit def kleisliGenReader[F[_], R]: TransReader[Kleisli, F, R] =
     new TransReader[Kleisli, F, R] {

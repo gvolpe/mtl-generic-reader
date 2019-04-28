@@ -14,40 +14,42 @@
  * limitations under the License.
  */
 
-package io.github.gvolpe.reader.zio
+package io.github.gvolpe.reader
 
-import cats._
-import cats.implicits._
-import io.github.gvolpe.reader.{ CheckLaws, GenReader, GenReaderLaws }
-import scalaz.zio.{ DefaultRuntime, Runtime, Task, TaskR, ZIO }
-import scalaz.zio.interop.catz._
+import cats.Eq
+import cats.tests.CatsSuite
+import io.github.gvolpe.reader.laws.GenReaderLaws
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arbitrary.{ arbitrary => getArbitrary }
+import scalaz.zio._
 
-object lawstest extends App with CheckLaws with TaskEqInstances {
-  import instances._
+class ZioGenReaderTest extends CatsSuite {
+  import TaskEqInstances._, zio._
 
   implicit val runtime = new DefaultRuntime {}
 
-  val env: String = "ctx"
-
-  val ga1: Id[Int]   = 123
-  val ga3: Task[Int] = 123.pure[Task]
-
-  val fa3: TaskR[String, Int] = ZIO.accessM(_ => ga3)
-
-  check(TaskRGenReaderLaws[String].elimination(fa3, env, ga3))
-  check(TaskRGenReaderLaws[String].idempotency(fa3, env))
-
-  println("✔️  All tests have passed! (•̀ᴗ•́)و ̑̑")
+  checkAll("TaskR GenReader", GenReaderTests(TaskRGenReaderLaws[String]).genReader[String])
 
 }
 
-trait TaskEqInstances {
+object TaskEqInstances {
+
+  implicit def eqTaskR[A: Eq, R: Arbitrary](implicit eqFa: Eq[Task[A]]): Eq[TaskR[R, A]] =
+    new Eq[TaskR[R, A]] {
+      def eqv(x: TaskR[R, A], y: TaskR[R, A]): Boolean = {
+        lazy val env = getArbitrary[R].sample.get
+        eqFa.eqv(x.provide(env), y.provide(env))
+      }
+    }
 
   implicit def eqTask[A: Eq](implicit rts: Runtime[Any]): Eq[Task[A]] =
     new Eq[Task[A]] {
       def eqv(x: Task[A], y: Task[A]): Boolean =
         Eq[A].eqv(rts.unsafeRun(x), rts.unsafeRun(y))
     }
+
+  implicit def arbTask[R, A: Arbitrary]: Arbitrary[TaskR[R, A]] =
+    Arbitrary(Arbitrary.arbitrary[A].map(a => TaskR.access[R](_ => a)))
 
 }
 

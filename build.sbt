@@ -12,8 +12,8 @@ sonatypeProfileName := "com.github.gvolpe"
 
 promptTheme := PromptTheme(
   List(
-    text("[SBT] ", fg(136)),
-    text(_ => "mtl-gen-reader", fg(64)).padRight(" λ ")
+    text("[sbt] ", fg(105)),
+    text(_ => "mtl-gen-reader", fg(15)).padRight(" λ ")
   )
 )
 
@@ -50,23 +50,6 @@ val commonSettings = Seq(
 			</developers>
 )
 
-lazy val mtlGenericReaderRoot = (project in file(".")).settings(
-  inThisBuild(
-    List(
-      organization := "io.github.gvolpe",
-      scalaVersion := "2.12.8",
-      version := "0.1.0-SNAPSHOT"
-    )
-  ),
-  name := "mtl-generic-reader",
-  scalafmtOnCompile := true,
-  libraryDependencies ++= Seq(
-    compilerPlugin(Libraries.kindProjector),
-    compilerPlugin(Libraries.betterMonadicFor),
-    compilerPlugin(Libraries.macroParadise)
-  ),
-)
-
 lazy val noPublish = Seq(
   publish := {},
   publishLocal := {},
@@ -76,98 +59,34 @@ lazy val noPublish = Seq(
 
 lazy val CoreDependencies = Seq(
 	Libraries.cats,
-	Libraries.catsMeowMtl,
-	Libraries.catsPar,
-	Libraries.catsEffect,
-	Libraries.fs2,
-	Libraries.http4sDsl,
-	Libraries.http4sServer,
-	Libraries.http4sCirce,
-	Libraries.circeCore,
-	Libraries.circeGeneric,
-	Libraries.circeGenericExt,
-	Libraries.circeParser,
-	Libraries.pureConfig,
-	Libraries.log4cats,
-	Libraries.logback,
-	Libraries.zioCore,
-	Libraries.zioCats,
-	Libraries.scalaTest      % "test",
-	Libraries.scalaCheck     % "test",
-	Libraries.catsEffectLaws % "test"
+	Libraries.catsMtl
+)
+
+lazy val LawsDependencies = Seq(
+	Libraries.catsEffectLaws
 )
 
 lazy val CatsDependencies = Seq(
-	Libraries.cats,
-	Libraries.catsMeowMtl,
-	Libraries.catsPar,
-	Libraries.catsEffect,
-	Libraries.fs2,
-	Libraries.http4sDsl,
-	Libraries.http4sServer,
-	Libraries.http4sCirce,
-	Libraries.circeCore,
-	Libraries.circeGeneric,
-	Libraries.circeGenericExt,
-	Libraries.circeParser,
-	Libraries.pureConfig,
-	Libraries.log4cats,
-	Libraries.logback,
-	Libraries.zioCore,
-	Libraries.zioCats,
 	Libraries.scalaTest      % "test",
 	Libraries.scalaCheck     % "test",
-	Libraries.catsEffectLaws % "test"
+  Libraries.catsTestKit % Test
 )
 
 lazy val ZioDependencies = Seq(
-	Libraries.cats,
-	Libraries.catsMeowMtl,
-	Libraries.catsPar,
-	Libraries.catsEffect,
-	Libraries.fs2,
-	Libraries.http4sDsl,
-	Libraries.http4sServer,
-	Libraries.http4sCirce,
-	Libraries.circeCore,
-	Libraries.circeGeneric,
-	Libraries.circeGenericExt,
-	Libraries.circeParser,
-	Libraries.pureConfig,
-	Libraries.log4cats,
-	Libraries.logback,
 	Libraries.zioCore,
 	Libraries.zioCats,
 	Libraries.scalaTest      % "test",
 	Libraries.scalaCheck     % "test",
-	Libraries.catsEffectLaws % "test"
+  Libraries.catsTestKit % Test
 )
 
 lazy val ExamplesDependencies = Seq(
-	Libraries.cats,
 	Libraries.catsMeowMtl,
-	Libraries.catsPar,
-	Libraries.catsEffect,
-	Libraries.fs2,
-	Libraries.http4sDsl,
-	Libraries.http4sServer,
-	Libraries.http4sCirce,
-	Libraries.circeCore,
-	Libraries.circeGeneric,
-	Libraries.circeGenericExt,
-	Libraries.circeParser,
-	Libraries.pureConfig,
-	Libraries.log4cats,
-	Libraries.logback,
-	Libraries.zioCore,
-	Libraries.zioCats,
-	Libraries.scalaTest      % "test",
-	Libraries.scalaCheck     % "test",
-	Libraries.catsEffectLaws % "test"
+	Libraries.catsEffect
 )
 
 lazy val `mtl-gen-reader-root` = project.in(file("."))
-  .aggregate(`mtl-gen-reader-core`, `mtl-gen-reader-cats`, `mtl-gen-reader-zio`, examples)
+  .aggregate(`mtl-gen-reader-core`, `mtl-gen-reader-laws`, `mtl-gen-reader-cats`, `mtl-gen-reader-zio`, examples)
   .settings(noPublish)
 
 lazy val `mtl-gen-reader-core` = project.in(file("modules/core"))
@@ -176,18 +95,25 @@ lazy val `mtl-gen-reader-core` = project.in(file("modules/core"))
   .settings(parallelExecution in Test := false)
   .enablePlugins(AutomateHeaderPlugin)
 
+lazy val `mtl-gen-reader-laws` = project.in(file("modules/laws"))
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= LawsDependencies)
+  .settings(parallelExecution in Test := false)
+  .dependsOn(`mtl-gen-reader-core`)
+  .enablePlugins(AutomateHeaderPlugin)
+
 lazy val `mtl-gen-reader-cats` = project.in(file("modules/cats"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= CatsDependencies)
   .settings(parallelExecution in Test := false)
-  .dependsOn(`mtl-gen-reader-core`)
+  .dependsOn(`mtl-gen-reader-core`, `mtl-gen-reader-laws`)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val `mtl-gen-reader-zio` = project.in(file("modules/zio"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= ZioDependencies)
   .settings(parallelExecution in Test := false)
-  .dependsOn(`mtl-gen-reader-core`)
+  .dependsOn(`mtl-gen-reader-core`, `mtl-gen-reader-laws`)
   .enablePlugins(AutomateHeaderPlugin)
 
 lazy val examples = project.in(file("modules/examples"))

@@ -53,7 +53,7 @@ import scalaz.zio.interop.catz.mtl._
 object rioapp extends App {
   import io.github.gvolpe.reader._
   import io.github.gvolpe.reader.instances.mtl._
-  import io.github.gvolpe.reader.zio.instances._
+  import io.github.gvolpe.reader.zio._
 
   type Dep[F[_[_]]] = Dependency[TaskR[F[Task], ?], Task]
 
