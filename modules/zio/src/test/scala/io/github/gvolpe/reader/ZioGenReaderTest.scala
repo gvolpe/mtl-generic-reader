@@ -17,19 +17,45 @@
 package io.github.gvolpe.reader
 
 import cats.Eq
+import cats.data.Kleisli
 import cats.tests.CatsSuite
 import io.github.gvolpe.reader.laws.GenReaderLaws
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.{ arbitrary => getArbitrary }
 import scalaz.zio._
+import scalaz.zio.interop.catz._
 
 class ZioGenReaderTest extends CatsSuite {
-  import TaskEqInstances._, zio._
+  import TaskEqInstances._, zio._, DependencyInstances._
 
   implicit val runtime = new DefaultRuntime {}
 
-  checkAll("TaskR GenReader", GenReaderTests(TaskRGenReaderLaws[String]).genReader[String])
+  checkAll("TaskR", GenReaderTests(TaskRGenReaderLaws[String]).genReader[String])
 
+  checkAll("TaskR", DependencyTests[TaskR[String, ?], Task, Kleisli[Task, String, ?]].dependency[String])
+
+}
+
+object DependencyInstances {
+  implicit val idDep: Dependency[TaskR[String, ?], TaskR[String, ?]] =
+    new Dependency[TaskR[String, ?], TaskR[String, ?]] {
+      def apply[A](fa: TaskR[String, A]): TaskR[String, A] = fa
+    }
+
+  implicit val taskRtoTaskDep: Dependency[TaskR[String, ?], Task] =
+    new Dependency[TaskR[String, ?], Task] {
+      def apply[A](fa: TaskR[String, A]): Task[A] = fa.provide("")
+    }
+
+  implicit val taskToKleisliDep: Dependency[Task, Kleisli[Task, String, ?]] =
+    new Dependency[Task, Kleisli[Task, String, ?]] {
+      def apply[A](fa: Task[A]): Kleisli[Task, String, A] = Kleisli(_ => fa)
+    }
+
+  implicit val kleisliToTaskRDep: Dependency[Kleisli[Task, String, ?], TaskR[String, ?]] =
+    new Dependency[Kleisli[Task, String, ?], TaskR[String, ?]] {
+      def apply[A](fa: Kleisli[Task, String, A]): TaskR[String, A] = fa.run("")
+    }
 }
 
 object TaskEqInstances {
