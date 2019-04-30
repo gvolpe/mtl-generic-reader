@@ -28,11 +28,35 @@ import org.scalacheck.Gen
 import scala.util.Try
 
 class KleisliGenReaderTest extends CatsSuite {
-  import CatsEqInstances._, kleisli._
+  import CatsEqInstances._, kleisli._, DependencyInstances._
 
-  checkAll("Kleisli Try GenReader", GenReaderTests(KleisliGenReaderLaws[Try, String]).genReader[String])
-  checkAll("Kleisli IO GenReader", GenReaderTests(KleisliGenReaderLaws[IO, String]).genReader[String])
+  checkAll("Kleisli[Try]", GenReaderTests(KleisliGenReaderLaws[Try, String]).genReader[String])
+  checkAll("Kleisli[IO]", GenReaderTests(KleisliGenReaderLaws[IO, String]).genReader[String])
 
+  checkAll("Kleisli", DependencyTests[Kleisli[IO, String, ?], IO, IO].dependency[String])
+
+}
+
+object DependencyInstances {
+  implicit val idKleisliDep: Dependency[Kleisli[IO, String, ?], Kleisli[IO, String, ?]] =
+    new Dependency[Kleisli[IO, String, ?], Kleisli[IO, String, ?]] {
+      def apply[A](fa: Kleisli[IO, String, A]): Kleisli[IO, String, A] = fa
+    }
+
+  implicit val idIODep: Dependency[IO, IO] =
+    new Dependency[IO, IO] {
+      def apply[A](fa: IO[A]): IO[A] = fa
+    }
+
+  implicit val ioToKleisliDep: Dependency[IO, Kleisli[IO, String, ?]] =
+    new Dependency[IO, Kleisli[IO, String, ?]] {
+      def apply[A](fa: IO[A]): Kleisli[IO, String, A] = Kleisli(_ => fa)
+    }
+
+  implicit val kleisliToIORDep: Dependency[Kleisli[IO, String, ?], IO] =
+    new Dependency[Kleisli[IO, String, ?], IO] {
+      def apply[A](fa: Kleisli[IO, String, A]): IO[A] = fa.run("")
+    }
 }
 
 object CatsEqInstances {

@@ -26,13 +26,7 @@ trait DependencyLaws {
   def identity[F[_]: Functor, A](fa: F[A])(implicit ev: Dependency[F, F]) =
     FunctionK.id[F](fa) <-> ev(fa)
 
-  def composition[F[_], G[_], H[_], A](fa: F[A], ga: G[A])(
-      implicit ev1: Dependency[F, G],
-      ev2: Dependency[G, H]
-  ) =
-    ev2(ev1(fa)) <-> ev2(ga)
-
-  def associativity[F[_], G[_], H[_], A](fa: F[A])(
+  def associativityAndComposition[F[_], G[_], H[_], A](fa: F[A])(
       implicit ev1: Dependency[F, G],
       ev2: Dependency[G, H],
       ev3: Dependency[H, F]
